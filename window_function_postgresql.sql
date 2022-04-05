@@ -37,7 +37,26 @@ INSERT INTO sales(year,group_id,amount) VALUES (2020,1,1646.00);
 INSERT INTO sales(year,group_id,amount) VALUES (2020,2,1975.00);
 INSERT INTO sales(year,group_id,amount) VALUES (2020,3,1516.00);
 
+CREATE TABLE sales_stats(
+    name VARCHAR(100) NOT NULL,
+    year SMALLINT NOT NULL CHECK (year > 0),
+    amount DECIMAL(10,2) CHECK (amount >= 0),
+    PRIMARY KEY (name,year)
+);
 
+INSERT INTO
+    sales_stats(name, year, amount)
+VALUES
+    ('John Doe',2018,120000),
+    ('Jane Doe',2018,110000),
+    ('Jack Daniel',2018,150000),
+    ('Yin Yang',2018,30000),
+    ('Stephane Heady',2018,200000),
+    ('John Doe',2019,150000),
+    ('Jane Doe',2019,130000),
+    ('Jack Daniel',2019,180000),
+    ('Yin Yang',2019,25000),
+    ('Stephane Heady',2019,270000);
 --  Window function with agrigation funtion
 select empid, name, job, salary, total_salary,
 	sum(salary) over(PARTITION by job)
@@ -123,6 +142,74 @@ select empid,
        highest_salary,
        (highest_salary-salary) as salary_diff,
        total_salary
-from last_salary
+from last_salary;
+
+-- Lead() Function
+with cet1 as (
+    select year,
+           sum(amount) as year_sales
+    from sales
+    group by year
+    order by year
+), cet2 as (
+    select year,
+           year_sales,
+           lead(year_sales, 1) over (order by year) as next_year_sales
+    from cet1
+)
+select year,
+       year_sales,
+       next_year_sales,
+       (next_year_sales - year_sales) as sales_diffrence
+from cet2;
+
+-- NTILE()
+select name,
+       amount,
+       year,
+       ntile(2) over (order by amount)
+from sales_stats;
+
+select name,
+       amount,
+       year,
+       ntile(3) over (partition by year order by year)
+from sales_stats;
+
+-- NTH_VALUE()
+select empid,
+       name,
+       job,
+       salary,
+       total_salary,
+       nth_value(job, 6) over (order by job)
+from job_salary
+
+select empid,
+       name,
+       job,
+       salary,
+       total_salary,
+       nth_value(job, 2) over (partition by job order by job)
+from job_salary
+
+-- Rank() function
+select empid,
+       name,
+       job,
+       salary,
+       total_salary,
+       rank() over(partition by job order by job)
+from job_salary
+
+select empid,
+       name,
+       job,
+       salary,
+       total_salary,
+       rank() over( order by salary)
+from job_salary
+
+
 
 

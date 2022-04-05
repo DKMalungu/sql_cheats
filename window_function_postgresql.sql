@@ -183,7 +183,7 @@ select empid,
        salary,
        total_salary,
        nth_value(job, 6) over (order by job)
-from job_salary
+from job_salary;
 
 select empid,
        name,
@@ -191,7 +191,7 @@ select empid,
        salary,
        total_salary,
        nth_value(job, 2) over (partition by job order by job)
-from job_salary
+from job_salary;
 
 -- Rank() function
 select empid,
@@ -200,7 +200,7 @@ select empid,
        salary,
        total_salary,
        rank() over(partition by job order by job)
-from job_salary
+from job_salary;
 
 select empid,
        name,
@@ -208,7 +208,56 @@ select empid,
        salary,
        total_salary,
        rank() over( order by salary)
-from job_salary
+from job_salary;
+
+-- Row_Number()
+select EMPID,
+       NAME,
+       JOB,
+       SALARY,
+       total_salary,
+       row_number() over (order by job) as row_number_col
+from job_salary;
+
+select EMPID,
+       NAME,
+       JOB,
+       SALARY,
+       total_salary,
+       row_number() over (partition by JOB order by job) as row_number_col
+from job_salary;
+
+Select distinct(salary),
+       row_number() over (order by salary) as row_number
+from job_salary;
+
+with distinct_salary as(
+    select distinct SALARY as salary
+    from job_salary
+)
+select salary,
+       row_number() over (order by salary)
+from distinct_salary;
+
+select salary,
+       row_number() over (order by salary)
+from (
+     select distinct salary
+    from job_salary
+         ) salary;
+
+select *
+from (
+     select empid,
+            name,
+            salary,
+            total_salary,
+            row_number() over (order by salary) as row_num
+    from
+         job_salary
+         ) x
+where row_num between 3 and 10;
+
 
 
 

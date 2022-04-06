@@ -258,6 +258,39 @@ from (
          ) x
 where row_num between 3 and 10;
 
+CREATE TABLE IF NOT EXISTS window_function(
+                                              period    VARCHAR(22) NOT NULL
+    ,age_group VARCHAR(8) NOT NULL
+    ,tot_dose  INTEGER  NOT NULL
+);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-01-18 00:00:00+01','0-4 yo',1);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-03-08 00:00:00+01','05-11 yo',1);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-01-03 00:00:00+01','05-11 yo',39);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-01-10 00:00:00+01','05-11 yo',109);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-01-17 00:00:00+01','05-11 yo',556);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-01-24 00:00:00+01','05-11 yo',385);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-01-31 00:00:00+01','05-11 yo',173);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-02-07 00:00:00+01','05-11 yo',70);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-02-14 00:00:00+01','05-11 yo',26);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-02-21 00:00:00+01','05-11 yo',30);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-02-28 00:00:00+01','05-11 yo',24);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-03-07 00:00:00+01','05-11 yo',20);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-03-14 00:00:00+01','05-11 yo',10);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2022-03-21 00:00:00+01','05-11 yo',16);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-06-28 00:00:00+02','12-14 yo',1);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-07-05 00:00:00+02','12-14 yo',54);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-07-12 00:00:00+02','12-14 yo',134);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-07-19 00:00:00+02','12-14 yo',263);
+INSERT INTO window_function(period,age_group,tot_dose) VALUES ('2021-07-26 00:00:00+02','12-14 yo',185);
+
+
+select period,
+       age_group,
+       sum(tot_dose) over(partition by age_group order by age_group  rows BETWEEN
+           UNBOUNDED PRECEDING AND
+           current row)
+from window_function
+
 
 
 
